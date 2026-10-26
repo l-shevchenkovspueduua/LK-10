@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квест-практикум — Тема 10. Кібергігієна освітянина</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #F7F4EF;
+            --bg-card: #FFFFFF;
+            --bg-soft: #EFECE6;
+            --bg-Illustration: #EAE5DC;
+            --text-main: #2C2623;
+            --text-muted: #655E57;
+            --accent-olive: #4A5D4E;
+            --accent-terracotta: #C86D51;
+            --accent-amber: #D99B52;
+            --border-color: #DCD5C9;
+            --success-bg: #E6F3EA;
+            --success-border: #84B893;
+            --success-text: #255834;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.55;
+            padding: 20px 15px 40px;
+        }
+
+        .top-nav {
+            max-width: 1020px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stage-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stage-pill.active {
+            background: var(--accent-olive);
+            color: #FFFFFF;
+            border-color: var(--accent-olive);
+        }
+
+        .stage-pill.done {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+
+        .quest-wrapper {
+            max-width: 1020px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 22px;
+            box-shadow: 0 12px 34px rgba(44, 38, 35, 0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .quest-page {
+            display: none;
+        }
+
+        .quest-page.active {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 620px;
+        }
+
+        @media (max-width: 860px) {
+            .quest-page.active {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Ліва колонка з рисунком */
+        .visual-pane {
+            background: linear-gradient(155deg, #EFECE6 0%, #E2DDD2 100%);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .visual-card {
+            width: 100%;
+            max-width: 310px;
+            background: rgba(255, 255, 255, 0.78);
+            border-radius: 20px;
+            padding: 24px 18px;
+            box-shadow: 0 10px 25px rgba(74, 93, 78, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            text-align: center;
+        }
+
+        .visual-caption {
+            margin-top: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-olive);
+        }
+
+        /* Права колонка зі змістом та питаннями */
+        .content-pane {
+            padding: 34px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stage-badge {
+            display: inline-block;
+            background: var(--bg-soft);
+            color: var(--accent-olive);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        h1, h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+
+        .theory-text {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .callout-box {
+            background: var(--bg-soft);
+            border-left: 4px solid var(--accent-olive);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            margin-bottom: 18px;
+            color: var(--text-main);
+        }
+
+        .reg-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+            background: var(--bg-page);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .reg-grid .full-row {
+            grid-column: 1 / -1;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-family: 'Inter', sans-serif;
+            background: #FFFFFF;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 58px;
+        }
+
+        .q-block {
+            margin-bottom: 16px;
+            background: var(--bg-page);
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .q-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 9px;
+            color: var(--text-main);
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            background: #FFFFFF;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .option-label:hover {
+            border-color: var(--accent-terracotta);
+        }
+
+        .option-label input {
+            margin-top: 3px;
+            accent-color: var(--accent-olive);
+        }
+
+        .action-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .btn {
+            background: var(--accent-olive);
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 9px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+        }
+
+        .btn-terracotta {
+            background: var(--accent-terracotta);
+        }
+
+        .btn-amber {
+            background: var(--accent-amber);
+        }
+
+        .btn-soft {
+            background: var(--bg-soft);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-msg {
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        details.hint-box {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--accent-olive);
+            cursor: pointer;
+        }
+
+        details.hint-box p {
+            margin-top: 6px;
+            padding: 10px 12px;
+            background: var(--bg-page);
+            border-radius: 8px;
+            color: var(--text-muted);
+        }
+
+        .flag-banner {
+            display: none;
+            margin-top: 12px;
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .flag-code {
+            font-family: monospace;
+            background: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--success-border);
+        }
+
+        .nav-footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rules-builder {
+            margin-top: 16px;
+            background: var(--bg-page);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .rule-item {
+            margin-bottom: 10px;
+        }
+
+        .rule-item label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-olive);
+            margin-bottom: 4px;
+        }
+
+        /* Модальне / фінальне вікно PDF-паспорта */
+        #passportSection {
+            display: none;
+            max-width: 1020px;
+            margin: 24px auto 0;
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 34px;
+            border: 2px solid var(--accent-olive);
+            box-shadow: 0 12px 34px rgba(44, 38, 35, 0.1);
+        }
+
+        .passport-header {
+            background: var(--accent-olive);
+            color: #FFFFFF;
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flags-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0 18px;
+        }
+
+        .flag-chip {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+        @media print {
+            body { background: #FFFFFF; padding: 0; }
+            .top-nav, .quest-wrapper, .no-print { display: none !important; }
+            #passportSection {
+                display: block !important;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Верхня панель етапів квесту -->
+    <div class="top-nav">
+        <div class="stage-pill active" id="pill1" onclick="jumpStage(1)">Етап 1 • Пошта і фішинг</div>
+        <div class="stage-pill" id="pill2" onclick="jumpStage(2)">Етап 2 • Хмарні доступи</div>
+        <div class="stage-pill" id="pill3" onclick="jumpStage(3)">Етап 3 • Таблиці та ПК</div>
+        <div class="stage-pill" id="pill4" onclick="jumpStage(4)">Етап 4 • КЕП і Дія.Підпис</div>
+        <div class="stage-pill" id="pill5" onclick="jumpStage(5)">Етап 5 • Кіберінцидент і Zoom</div>
+        <div class="stage-pill" id="pill6" onclick="jumpStage(6)">Етап 6 • 5 правил і Паспорт</div>
+    </div>
+
+    <div class="quest-wrapper">
+
+        <!-- ==================== СТОРІНКА 1 ==================== -->
+        <div class="quest-page active" id="page1">
+            <div class="visual-pane">
+                <div class="visual-card">
+                    <svg viewBox="0 0 240 220" width="100%" height="200">
+                        <rect x="20" y="30" width="200" height="140" rx="16" fill="#F7F4EF" stroke="#4A5D4E" stroke-width="3"/>
+                        <path d="M25 40 L120 110 L215 40" fill="none" stroke="#C86D51" stroke-width="4"/>
+                        <circle cx="175" cy="145" r="38" fill="#4A5D4E"/>
+                        <path d="M160 145 L170 156 L192 133" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+                        <rect x="42" y="65" width="90" height="10" rx="5" fill="#D
